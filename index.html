@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Dashboard</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #e9ecef;
+            color: var(--primary);
+        }
+
+        .nav-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .user-profile {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .user-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-info p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 0.5rem;
+        }
+
+        .search-bar i {
+            color: var(--gray);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-bell {
+            position: relative;
+            margin-right: 1.5rem;
+            color: var(--gray);
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* Dashboard Widgets */
+        .dashboard-widgets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .widget {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .widget-title {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .widget-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .widget-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .widget-change.positive {
+            color: var(--success);
+        }
+
+        .widget-change.negative {
+            color: var(--danger);
+        }
+
+        .widget-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .widget-icon.followers {
+            background-color: var(--primary);
+        }
+
+        .widget-icon.likes {
+            background-color: var(--accent);
+        }
+
+        .widget-icon.comments {
+            background-color: var(--success);
+        }
+
+        .widget-icon.shares {
+            background-color: var(--warning);
+        }
+
+        /* Main Content Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Posts Section */
+        .posts-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .post {
+            display: flex;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .post:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+
+        .post-content {
+            flex: 1;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-user {
+            font-weight: 600;
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .post-text {
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .post-actions {
+            display: flex;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            margin-right: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .post-action i {
+            margin-right: 5px;
+        }
+
+        .post-action:hover {
+            color: var(--primary);
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 1.5rem;
+        }
+
+        .comment {
+            display: flex;
+            margin-top: 1rem;
+            padding-left: 1rem;
+            border-left: 2px solid #e9ecef;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-user {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .comment-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .comment-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .comment-actions {
+            display: flex;
+            margin-top: 0.5rem;
+        }
+
+        .comment-action {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+
+        .comment-action:hover {
+            color: var(--primary);
+        }
+
+        /* Right Sidebar */
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Notifications */
+        .notifications {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .notification {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .notification:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .notification-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-text strong {
+            color: var(--primary);
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Analytics */
+        .analytics {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .analytics-chart {
+            height: 200px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+        }
+
+        .analytics-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .dashboard-widgets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .dashboard-widgets {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-share-alt"></i>
+                <span>SocialDash</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Followers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-avatar">
+                <div class="user-info">
+                    <h4>Sarah Johnson</h4>
+                    <p>@sarahj</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="user-actions">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-avatar">
+                </div>
+            </div>
+
+            <!-- Dashboard Widgets -->
+            <div class="dashboard-widgets">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div>
+                            <div class="widget-title">Followers</div>
+                            <div class="widget-value">12,345</div>
+                            <div class="widget-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>12% from last week</span>
+                            </div>
+                        </div>
+                        <div class="widget-icon followers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget">
+                    <div class="widget-header">
+                        <div>
+                            <div class="widget-title">Likes</div>
+                            <div class="widget-value">8,742</div>
+                            <div class="widget-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>8% from last week</span>
+                            </div>
+                        </div>
+                        <div class="widget-icon likes">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget">
+                    <div class="widget-header">
+                        <div>
+                            <div class="widget-title">Comments</div>
+                            <div class="widget-value">3,215</div>
+                            <div class="widget-change negative">
+                                <i class="fas fa-arrow-down"></i>
+                                <span>3% from last week</span>
+                            </div>
+                        </div>
+                        <div class="widget-icon comments">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="widget">
+                    <div class="widget-header">
+                        <div>
+                            <div class="widget-title">Shares</div>
+                            <div class="widget-value">5,678</div>
+                            <div class="widget-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>24% from last week</span>
+                            </div>
+                        </div>
+                        <div class="widget-icon shares">
+                            <i class="fas fa-share"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="content-grid">
+                <!-- Posts Section -->
+                <div class="posts-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Posts</h2>
+                        <button class="btn">View All</button>
+                    </div>
+                    <div class="post">
+                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="post-avatar">
+                        <div class="post-content">
+                            <div class="post-header">
+                                <span class="post-user">Emily Wilson</span>
+                                <span class="post-time">2 hours ago</span>
+                            </div>
+                            <p class="post-text">
+                                Just launched my new website! Check it out and let me know what you think. 
+                                I've been working on this project for months and I'm excited to share it with everyone.
+                            </p>
+                            <img src="https://source.unsplash.com/random/600x300/?website" alt="Post" class="post-image">
+                            <div class="post-actions">
+                                <div class="post-action">
+                                    <i class="fas fa-heart"></i>
+                                    <span>248</span>
+                                </div>
+                                <div class="post-action">
+                                    <i class="fas fa-comment"></i>
+                                    <span>42</span>
+                                </div>
+                                <div class="post-action">
+                                    <i class="fas fa-share"></i>
+                                    <span>17</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post">
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="User" class="post-avatar">
+                        <div class="post-content">
+                            <div class="post-header">
+                                <span class="post-user">Michael Brown</span>
+                                <span class="post-time">5 hours ago</span>
+                            </div>
+                            <p class="post-text">
+                                Beautiful day for a hike! The views were absolutely breathtaking. 
+                                Nature always helps me clear my mind and get new creative ideas.
+                            </p>
+                            <img src="https://source.unsplash.com/random/600x300/?hiking" alt="Post" class="post-image">
+                            <div class="post-actions">
+                                <div class="post-action">
+                                    <i class="fas fa-heart"></i>
+                                    <span>512</span>
+                                </div>
+                                <div class="post-action">
+                                    <i class="fas fa-comment"></i>
+                                    <span>87</span>
+                                </div>
+                                <div class="post-action">
+                                    <i class="fas fa-share"></i>
+                                    <span>32</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="comments-section">
+                        <h3 class="section-title">Recent Comments</h3>
+                        <div class="comment">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="comment-avatar">
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="comment-user">Jessica Lee</span>
+                                    <span class="comment-time">1 hour ago</span>
+                                </div>
+                                <p class="comment-text">
+                                    The website looks amazing! The design is so clean and intuitive. 
+                                    Great job on the color scheme too.
+                                </p>
+                                <div class="comment-actions">
+                                    <span class="comment-action">Like</span>
+                                    <span class="comment-action">Reply</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="comment-avatar">
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="comment-user">David Kim</span>
+                                    <span class="comment-time">30 minutes ago</span>
+                                </div>
+                                <p class="comment-text">
+                                    That hike looks incredible! Which trail is this? 
+                                    I'd love to check it out this weekend.
+                                </p>
+                                <div class="comment-actions">
+                                    <span class="comment-action">Like</span>
+                                    <span class="comment-action">Reply</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="right-sidebar">
+                    <!-- Notifications -->
+                    <div class="notifications">
+                        <div class="section-header">
+                            <h2 class="section-title">Notifications</h2>
+                            <button class="btn">Mark All Read</button>
+                        </div>
+                        <div class="notification">
+                            <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="notification-avatar">
+                            <div class="notification-content">
+                                <p class="notification-text">
+                                    <strong>Lisa Ray</strong> mentioned you in a comment: "Great suggestion @sarahj!"
+                                </p>
+                                <span class="notification-time">15 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="notification">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="User" class="notification-avatar">
+                            <div class="notification-content">
+                                <p class="notification-text">
+                                    <strong>Robert Chen</strong> shared your post with 120 people.
+                                </p>
+                                <span class="notification-time">1 hour ago</span>
+                            </div>
+                        </div>
+                        <div class="notification">
+                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="User" class="notification-avatar">
+                            <div class="notification-content">
+                                <p class="notification-text">
+                                    <strong>Amanda Smith</strong> started following you.
+                                </p>
+                                <span class="notification-time">3 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div class="analytics">
+                        <div class="section-header">
+                            <h2 class="section-title">Engagement Analytics</h2>
+                        </div>
+                        <div class="analytics-chart">
+                            [Engagement Chart Would Appear Here]
+                        </div>
+                        <div class="analytics-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">78%</div>
+                                <div class="stat-label">Engagement Rate</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2.4K</div>
+                                <div class="stat-label">Impressions</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">1.2K</div>
+                                <div class="stat-label">Reach</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
